@@ -1,0 +1,36 @@
+{
+  "name": "elorro-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "site:check": "tsx scripts/site-check.ts",
+    "content:check": "tsx scripts/content-check.ts",
+    "prebuild": "npm run site:check && npm run content:check",
+    "verify": "SITE_URL=http://localhost:3000 npm run lint && SITE_URL=http://localhost:3000 npm run typecheck && SITE_URL=http://localhost:3000 npm run test && SITE_URL=http://localhost:3000 npm run content:check && SITE_URL=http://localhost:3000 npm run build"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "next": "16.4.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.4",
+    "@types/node": "^22.19.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.1",
+    "tailwindcss": "4.3.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.13"
+  }
+}
