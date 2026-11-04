@@ -53,6 +53,18 @@ no resolverlo en silencio.
   (misma ancla).
 - <html lang> por ruta. hreflang es, en y x-default (x-default apunta a /en) en
   metadata y en sitemap.xml.
+- La URL canónica se resuelve con una única función en `src/config/site.ts`:
+  1. `SITE_URL`, si está definida, debe tener protocolo `http` o `https` y no
+     terminar en `/`; si no cumple, se falla.
+  2. Si no está definida, usar `https://${VERCEL_PROJECT_PRODUCTION_URL}`. Vercel
+     documenta esta variable de sistema como disponible en build y runtime; su
+     valor es un dominio sin protocolo, por ejemplo `my-site.com`.
+  3. Solo durante `next dev`, si las anteriores no están definidas, usar
+     `http://localhost:3000`.
+  4. En cualquier otro caso se falla indicando `SITE_URL`.
+  `metadataBase`, alternates/hreflang y sitemap usan exclusivamente esta
+  función; ningún otro código lee `SITE_URL` directamente. CI y scripts de
+  verificación fijan `SITE_URL=http://localhost:3000`.
 - Diccionario propio: src/i18n/dictionaries/es.ts es la fuente del tipo; en.ts
   debe cumplir `satisfies` sobre ese tipo. Una clave faltante rompe typecheck.
 - Fechas con Intl.DateTimeFormat y timeZone: 'UTC' (evita desajustes de
@@ -149,7 +161,8 @@ accesible por teclado), no un tooltip. Funciones puras con tests.
 
 ## 9. CI
 
-ci.yml: install, lint, typecheck, vitest, content:check, build. Después (M5):
+  ci.yml: install, lint, typecheck, vitest, content:check, build. CI define
+  `SITE_URL=http://localhost:3000`. Después (M5):
 Playwright + axe contra `next start`, Lighthouse CI, link-check.
 
 ## 10. Hitos
