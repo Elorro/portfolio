@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { NextRequest } from 'next/server';
 import { resolveSiteUrl } from '../src/config/site';
 import { negotiate } from '../src/i18n/negotiate';
-import { config as proxyConfig } from '../proxy';
+import { config as proxyConfig, proxy } from '../proxy';
 
 describe('resolveSiteUrl', () => {
   it('uses SITE_URL when defined', () => {
@@ -46,5 +47,22 @@ describe('negotiate', () => {
 describe('proxy matcher', () => {
   it('is configured for the root route only', () => {
     expect(proxyConfig.matcher).toBe('/');
+  });
+});
+
+describe('proxy function', () => {
+  it.each([
+    ['es-CO,es;q=0.9', '/es'],
+    ['fr', '/en'],
+    [null, '/en'],
+  ])('redirects Accept-Language %s to %s', (acceptLanguage, expectedPath) => {
+    const headers = new Headers();
+    if (acceptLanguage !== null) headers.set('Accept-Language', acceptLanguage);
+    const request = new NextRequest('https://portfolio.example/', { headers });
+    const response = proxy(request);
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toMatch(new RegExp(`${expectedPath}$`));
+    expect(response.headers.get('vary')).toBe('Accept-Language');
   });
 });
