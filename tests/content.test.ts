@@ -71,6 +71,25 @@ describe('content validation', () => {
     expect(validateContentFiles(files, fixedNow).errors).toContainEqual(expect.objectContaining({ field: 'metrics.0.as_of' }));
   });
 
+  it('requires source and as_of for declared metrics', async () => {
+    const files = await paired();
+    const metrics = document(files, 'sample.es.md').metrics as Array<Record<string, unknown>>;
+    metrics[0]!.epistemic = 'declarado';
+    delete metrics[0]!.source;
+    delete metrics[0]!.as_of;
+    const errors = validateContentFiles(files, fixedNow).errors;
+    expect(errors).toContainEqual(expect.objectContaining({ file: 'sample.es.md', field: 'metrics.0.source' }));
+    expect(errors).toContainEqual(expect.objectContaining({ file: 'sample.es.md', field: 'metrics.0.as_of' }));
+  });
+
+  it('rejects http links', async () => {
+    const files = await paired();
+    document(files, 'sample.es.md').links = { repo: 'http://fixture.example/repo' };
+    expect(validateContentFiles(files, fixedNow).errors).toContainEqual(
+      expect.objectContaining({ file: 'sample.es.md', field: 'links.repo' }),
+    );
+  });
+
   it('fails for invalid and future as_of values', async () => {
     const files = await paired();
     const metrics = document(files, 'sample.es.md').metrics as Array<Record<string, unknown>>;
