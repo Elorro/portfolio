@@ -51,6 +51,13 @@ function parityFields(document: ContentDocument) {
   };
 }
 
+function filenameIdentity(file: string): { slug: string; lang: 'es' | 'en' } | undefined {
+  const basename = file.split(/[\\/]/).at(-1);
+  const match = basename?.match(/^(.+)\.(es|en)\.md$/);
+  if (!match) return undefined;
+  return { slug: match[1]!, lang: match[2] as 'es' | 'en' };
+}
+
 export function validateContentFiles(
   files: ContentFileInput[],
   now = new Date(),
@@ -106,6 +113,15 @@ export function validateContentFiles(
 
   const bySlugAndLang = new Map<string, { file: string; document: ContentDocument }>();
   const bySlug = new Map<string, Array<{ file: string; document: ContentDocument }>>();
+  const filesBySlug = new Map<string, Map<'es' | 'en', string>>();
+  for (const input of files) {
+    const identity = filenameIdentity(input.file);
+    if (!identity) continue;
+    const languages = filesBySlug.get(identity.slug) ?? new Map<'es' | 'en', string>();
+    languages.set(identity.lang, input.file);
+    filesBySlug.set(identity.slug, languages);
+  }
+
   for (const entry of documents) {
     const key = `${entry.document.slug}.${entry.document.lang}`;
     if (bySlugAndLang.has(key)) {
@@ -116,11 +132,16 @@ export function validateContentFiles(
     bySlug.set(entry.document.slug, [...(bySlug.get(entry.document.slug) ?? []), entry]);
   }
 
+  for (const [slug, languages] of filesBySlug) {
+    const spanishFile = languages.get('es');
+    const englishFile = languages.get('en');
+    if (!spanishFile) errors.push({ file: englishFile!, field: 'lang', message: `missing .es file for slug "${slug}"` });
+    if (!englishFile) errors.push({ file: spanishFile!, field: 'lang', message: `missing .en file for slug "${slug}"` });
+  }
+
   for (const [slug, entries] of bySlug) {
     const spanish = entries.find((entry) => entry.document.lang === 'es');
     const english = entries.find((entry) => entry.document.lang === 'en');
-    if (!spanish) errors.push({ file: english?.file ?? slug, field: 'lang', message: `missing .es file for slug "${slug}"` });
-    if (!english) errors.push({ file: spanish?.file ?? slug, field: 'lang', message: `missing .en file for slug "${slug}"` });
     if (spanish && english) {
       const left = parityFields(spanish.document);
       const right = parityFields(english.document);

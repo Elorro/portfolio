@@ -103,6 +103,14 @@ describe('content validation', () => {
     expect(validateContentFiles(files.slice(1), fixedNow).errors).toContainEqual(expect.objectContaining({ field: 'lang', message: expect.stringContaining('missing .es') }));
   });
 
+  it('does not report a missing .es file when the existing .es frontmatter is invalid', async () => {
+    const files = await paired();
+    delete document(files, 'sample.es.md').honest_limit;
+    const errors = validateContentFiles(files, fixedNow).errors;
+    expect(errors).toContainEqual(expect.objectContaining({ file: 'sample.es.md', field: 'honest_limit' }));
+    expect(errors).not.toContainEqual(expect.objectContaining({ field: 'lang', message: expect.stringContaining('missing .es') }));
+  });
+
   it('fails when parity fields diverge', async () => {
     const files = await paired();
     document(files, 'sample.en.md').stack = ['JavaScript'];
