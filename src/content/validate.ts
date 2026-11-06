@@ -39,15 +39,6 @@ function parityFields(document: ContentDocument) {
     status: document.status,
     stack: document.stack,
     links: document.links,
-    metrics: [...document.metrics]
-      .sort((a, b) => a.id.localeCompare(b.id))
-      .map((metric) => ({
-        id: metric.id,
-        value: parityValue(metric.value),
-        epistemic: metric.epistemic,
-        n: metric.n ?? null,
-        as_of: metric.as_of ?? null,
-      })),
   };
 }
 
@@ -145,9 +136,28 @@ export function validateContentFiles(
     if (spanish && english) {
       const left = parityFields(spanish.document);
       const right = parityFields(english.document);
-      for (const field of ['tier', 'size', 'order', 'status', 'stack', 'links', 'metrics'] as const) {
+      for (const field of ['tier', 'size', 'order', 'status', 'stack', 'links'] as const) {
         if (JSON.stringify(left[field]) !== JSON.stringify(right[field])) {
           errors.push({ file: english.file, field, message: `does not match Spanish parity for slug "${slug}"` });
+        }
+      }
+
+      const spanishMetrics = new Map(spanish.document.metrics.map((metric) => [metric.id, metric]));
+      const englishMetrics = new Map(english.document.metrics.map((metric) => [metric.id, metric]));
+      const metricIds = [...new Set([...spanishMetrics.keys(), ...englishMetrics.keys()])].sort();
+      if (JSON.stringify([...spanishMetrics.keys()].sort()) !== JSON.stringify([...englishMetrics.keys()].sort())) {
+        errors.push({ file: english.file, field: 'metrics.id', message: `does not match Spanish parity for slug "${slug}"` });
+      }
+      for (const id of metricIds) {
+        const spanishMetric = spanishMetrics.get(id);
+        const englishMetric = englishMetrics.get(id);
+        if (!spanishMetric || !englishMetric) continue;
+        for (const field of ['value', 'epistemic', 'n', 'as_of'] as const) {
+          const spanishValue = field === 'value' ? parityValue(spanishMetric[field]) : (spanishMetric[field] ?? null);
+          const englishValue = field === 'value' ? parityValue(englishMetric[field]) : (englishMetric[field] ?? null);
+          if (JSON.stringify(spanishValue) !== JSON.stringify(englishValue)) {
+            errors.push({ file: english.file, field: `metrics.${field}`, message: `does not match Spanish parity for metric "${id}"` });
+          }
         }
       }
     }
