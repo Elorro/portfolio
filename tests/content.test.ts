@@ -146,6 +146,25 @@ describe('content validation', () => {
     );
   });
 
+  it('allows all prose fields to differ between Spanish and English', async () => {
+    const files = await paired();
+    const spanish = document(files, 'sample.es.md');
+    const english = document(files, 'sample.en.md');
+    english.title = 'Different English title';
+    english.tagline = 'Different English tagline';
+    english.honest_limit = 'Different English limitation';
+    english.live_caveat = 'Different English caveat';
+    const englishMetrics = english.metrics as Array<Record<string, unknown>>;
+    englishMetrics[0]!.label = 'Different English label';
+    englishMetrics[0]!.source = 'Different English source';
+    englishMetrics[0]!.recompute = 'Different English recompute instructions';
+    spanish.live_caveat = 'Advertencia distinta en español';
+    files.find((entry) => entry.file === 'sample.es.md')!.body = 'Cuerpo diferente en español.';
+    files.find((entry) => entry.file === 'sample.en.md')!.body = 'Different English body.';
+
+    expect(validateContentFiles(files, fixedNow).errors).toEqual([]);
+  });
+
   it('normalizes comma decimal separators to dots for metric parity', async () => {
     const files = await paired();
     for (const input of files) {
