@@ -111,10 +111,39 @@ describe('content validation', () => {
     expect(errors).not.toContainEqual(expect.objectContaining({ field: 'lang', message: expect.stringContaining('missing .es') }));
   });
 
-  it('fails when parity fields diverge', async () => {
+  it.each([
+    ['tier', (files: ContentFileInput[]) => { document(files, 'sample.en.md').tier = 'soporte'; }],
+    ['size', (files: ContentFileInput[]) => { document(files, 'sample.en.md').size = 'small'; }],
+    ['order', (files: ContentFileInput[]) => { document(files, 'sample.en.md').order = 2; }],
+    ['status', (files: ContentFileInput[]) => { document(files, 'sample.en.md').status = 'research'; }],
+    ['stack', (files: ContentFileInput[]) => { document(files, 'sample.en.md').stack = ['JavaScript']; }],
+    ['links', (files: ContentFileInput[]) => { document(files, 'sample.en.md').links = { live: 'https://fixture.example' }; }],
+    ['metrics.id', (files: ContentFileInput[]) => {
+      const metrics = document(files, 'sample.en.md').metrics as Array<Record<string, unknown>>;
+      metrics[0]!.id = 'other_metric';
+    }],
+    ['metrics.value', (files: ContentFileInput[]) => {
+      const metrics = document(files, 'sample.en.md').metrics as Array<Record<string, unknown>>;
+      metrics[0]!.value = 11;
+    }],
+    ['metrics.epistemic', (files: ContentFileInput[]) => {
+      const metrics = document(files, 'sample.en.md').metrics as Array<Record<string, unknown>>;
+      metrics[0]!.epistemic = 'declarado';
+    }],
+    ['metrics.n', (files: ContentFileInput[]) => {
+      const metrics = document(files, 'sample.en.md').metrics as Array<Record<string, unknown>>;
+      metrics[0]!.n = 3;
+    }],
+    ['metrics.as_of', (files: ContentFileInput[]) => {
+      const metrics = document(files, 'sample.en.md').metrics as Array<Record<string, unknown>>;
+      metrics[0]!.as_of = '2026-11-02';
+    }],
+  ])('fails when parity field %s diverges', async (field, mutate) => {
     const files = await paired();
-    document(files, 'sample.en.md').stack = ['JavaScript'];
-    expect(validateContentFiles(files, fixedNow).errors).toContainEqual(expect.objectContaining({ file: 'sample.en.md', field: 'stack' }));
+    mutate(files);
+    expect(validateContentFiles(files, fixedNow).errors).toContainEqual(
+      expect.objectContaining({ file: 'sample.en.md', field }),
+    );
   });
 
   it('normalizes comma decimal separators to dots for metric parity', async () => {
