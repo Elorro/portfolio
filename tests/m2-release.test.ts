@@ -11,7 +11,10 @@ describe('release content gate', () => {
     expect(report.exitCode).not.toBe(0);
     expect(report.lines.join('\n')).toContain('CONTENT_SOURCE debe ser real');
     expect(report.lines.join('\n')).toContain('diccionarios contienen [FIXTURE]');
-    expect(report.lines.join('\n')).toContain('falta public/cv-es.pdf');
-    expect(report.lines.join('\n')).toContain('falta public/cv-en.pdf');
+    expect(report.lines.join('\n')).not.toContain('falta public/cv-');
+    process.env.CONTENT_SOURCE = 'real';
+    const missingCv = await checkContentDirectory(undefined, true);
+    expect(missingCv.lines.join('\n')).toContain('falta public/cv-es.pdf');
+    expect(missingCv.lines.join('\n')).toContain('falta public/cv-en.pdf');
   });
 });
