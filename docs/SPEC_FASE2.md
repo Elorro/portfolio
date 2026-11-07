@@ -179,6 +179,40 @@ Playwright + axe contra `next start`, Lighthouse CI, link-check.
   v1 = M1 + M2 + M3 + M5. M4 entra inmediatamente después, sujeto a la
   precondición de la sección 11.
 
+## Apéndice M2 — Secciones con fixtures
+
+- `CONTENT_SOURCE=real` es el modo predeterminado; `CONTENT_SOURCE=fixtures`
+  usa exclusivamente `tests/fixtures/content/showcase/projects/`. Las páginas
+  de fixtures muestran un aviso persistente y robots noindex/nofollow. En modo
+  real, contenido ausente o vacío hace fallar el build.
+- CI usa fixtures hasta M3. Se añaden `dev:fixtures`, `build:fixtures` y el
+  modo `content:check -- --release`, que rechaza fixtures, marcadores
+  `[FIXTURE]` en diccionarios/perfil y CV configurados que no existan.
+- Los textos en voz del autor permanecen como placeholders `[FIXTURE]`; Sobre
+  mí es una lista de párrafos. Los fixtures showcase son sintéticos y están
+  separados de los fixtures de validación M1.
+- El selector de idioma conserva el fragmento mediante una mejora de cliente
+  mínima que solo acepta `#[a-z0-9-]+`; sin JavaScript el enlace base funciona.
+- M2 añade Motion y react-markdown. Motion se limita al proveedor, TiltCard,
+  Freshness y selector de idioma; Markdown se renderiza en servidor y admite
+  únicamente destinos https y fragmentos.
+- Las secciones usan anclas estables `projects`, `case-study`, `support`,
+  `mentions`, `about` y `contact`; las tarjetas usan `project-<slug>`.
+- El orden de proyectos es `order` ascendente y luego `slug`. Las tarjetas
+  centrales grandes ocupan todo el grid y las medianas una columna desde 768px;
+  soporte usa una, dos y tres columnas en 1/768/1024px; menciones son filas.
+- Header no sticky, nav sin menú ni JS, skip link, landmarks y un único h1 del
+  hero. El foco se marca con `:focus-visible`.
+- TiltCard solo responde a puntero en tarjetas centrales large/medium; con
+  hover none o movimiento reducido queda desactivada. Las islas no controlan
+  contenido ni foco. El brillo del hero es CSS y solo se anima con
+  `prefers-reduced-motion: no-preference`.
+- Markdown no habilita HTML crudo ni GFM, desplaza los headings dos niveles,
+  transforma imágenes en su texto alternativo y no abre enlaces en otra pestaña.
+- Las fixtures cubren estados deployed/research/prototype/academic, datos
+  medidos/declarados, live caveat, métricas con/sin n y recompute, y fechas
+  recientes/antiguas; su contenido no representa proyectos reales.
+
 ## 11. Pendientes del autor (no bloquean M1)
 
   - Confirmar que el JSON de hurst contiene solo H(t) derivado (sin OHLCV) antes
