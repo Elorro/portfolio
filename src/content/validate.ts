@@ -1,6 +1,7 @@
 import { contentSchema, type ContentDocument } from './schema';
+import { STALE_DAYS } from './constants';
 
-export const STALE_DAYS = 180;
+export { STALE_DAYS } from './constants';
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface ContentFileInput {

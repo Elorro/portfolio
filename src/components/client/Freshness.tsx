@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { STALE_DAYS } from '@/content/validate';
+import { STALE_DAYS } from '@/content/constants';
 import { formatDateUTC } from '@/i18n/date';
 
 const DAY_MS = 86_400_000;
