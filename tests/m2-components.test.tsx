@@ -29,12 +29,12 @@ describe('M2 synchronous rendering', () => {
 
   it('always renders honest limits and only safe links and live caveats', () => {
     for (const variant of ['large', 'medium', 'small'] as const) {
-      const html = renderToString(<ProjectCard item={{ ...base, live_caveat: 'Synthetic caveat', links: { live: 'https://example.invalid/live', repo: 'http://unsafe.invalid' } }} dictionary={es} variant={variant} />);
+      const html = renderToString(<ProjectCard item={{ ...base, live_caveat: 'Synthetic caveat', links: { live: 'https://example.invalid/live', repo: 'https://example.invalid/repo', api_docs: 'http://unsafe.invalid/api' } }} dictionary={es} variant={variant} />);
       expect(html).toContain('Synthetic limitation'); expect(html).toContain('Synthetic caveat');
-      expect(html).toContain('https://example.invalid/live'); expect(html).not.toContain('http://unsafe.invalid');
+      expect(html).toContain('https://example.invalid/live'); expect(html).toContain('https://example.invalid/repo'); expect(html).not.toContain('http://unsafe.invalid');
     }
-    const noLive = renderToString(<ProjectCard item={base} dictionary={es} />);
-    expect(noLive).toContain('Synthetic limitation'); expect(noLive).not.toContain('Synthetic caveat');
+    const noLive = renderToString(<ProjectCard item={{ ...base, live_caveat: 'Orphan caveat', links: { repo: 'https://example.invalid/repo' } }} dictionary={es} />);
+    expect(noLive).toContain('Synthetic limitation'); expect(noLive).not.toContain('Orphan caveat');
   });
 
   it('renders safe Markdown, shifts headings and substitutes image alt text', () => {
@@ -60,14 +60,14 @@ describe('M2 synchronous rendering', () => {
   it('aggregates measured metrics only and exposes dates and demo breakdown', () => {
     const result = aggregateHero([
       { slug: 'a', links: { live: 'https://example.invalid' }, metrics: [measured, { ...measured, id: 'demo_verified', value: 1 }] },
-      { slug: 'b', links: {}, metrics: [{ ...measured, value: 100, epistemic: 'declarado' }] },
+      { slug: 'b', links: {}, metrics: [{ ...measured, value: 1000, epistemic: 'declarado' }] },
     ]);
     expect(result.testsPassing.total).toBe(4); expect(result.demoVerified).toBe(1);
     expect(result.demoVerifiedByProject).toEqual([{ slug: 'a', asOf: '2026-10-30' }]);
     expect(result.oldestAsOf).toBe('2026-10-30');
     expect(aggregateHero([]).oldestAsOf).toBeNull();
     const hero = renderToString(<Hero documents={[]} dictionary={es} />);
-    expect(hero).toContain('Demos con enlace verificado'); expect(hero).toContain('sin datos medidos');
+    expect(hero).toContain('demos con enlace verificado'); expect(hero).toContain('sin datos medidos');
     expect(hero.match(/—/g)).toHaveLength(3);
   });
 });

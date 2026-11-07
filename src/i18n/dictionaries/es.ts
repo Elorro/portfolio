@@ -47,7 +47,7 @@ export const es = {
   recompute: 'Cómo reproducir',
   staleMetric: 'Esta métrica puede estar desactualizada.',
   testsPassing: 'Pruebas aprobadas',
-  demosWithVerifiedLink: 'Demos con enlace verificado',
+  demosWithVerifiedLink: 'demos con enlace verificado',
   projectBreakdown: 'Desglose por proyecto',
   repository: 'Repositorio',
   liveDemo: 'Demo en vivo',
