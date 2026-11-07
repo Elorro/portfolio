@@ -1,7 +1,8 @@
 import { checkContentDirectory } from '../src/content/check';
 
 async function main() {
-  const report = await checkContentDirectory(process.argv[2]);
+  const directory = process.argv[2] === '--release' ? undefined : process.argv[2];
+  const report = await checkContentDirectory(directory);
   for (const line of report.lines) {
     if (line.startsWith('AVISO ')) console.warn(line);
     else console.error(line);

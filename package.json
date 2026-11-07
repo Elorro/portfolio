@@ -7,7 +7,9 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:fixtures": "CONTENT_SOURCE=fixtures next dev",
     "build": "next build",
+    "build:fixtures": "CONTENT_SOURCE=fixtures next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
@@ -15,13 +17,15 @@
     "site:check": "tsx scripts/site-check.ts",
     "content:check": "tsx scripts/content-check.ts",
     "prebuild": "npm run site:check && npm run content:check",
-    "verify": "SITE_URL=http://localhost:3000 npm run lint && SITE_URL=http://localhost:3000 npm run typecheck && SITE_URL=http://localhost:3000 npm run test && SITE_URL=http://localhost:3000 npm run content:check && SITE_URL=http://localhost:3000 npm run build"
+    "verify": "SITE_URL=http://localhost:3000 CONTENT_SOURCE=fixtures npm run lint && SITE_URL=http://localhost:3000 CONTENT_SOURCE=fixtures npm run typecheck && SITE_URL=http://localhost:3000 CONTENT_SOURCE=fixtures npm run test && SITE_URL=http://localhost:3000 CONTENT_SOURCE=fixtures npm run content:check && SITE_URL=http://localhost:3000 CONTENT_SOURCE=fixtures npm run build"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
+    "motion": "^14.10.1",
     "next": "16.4.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "react-markdown": "^10.1.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
