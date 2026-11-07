@@ -9,6 +9,7 @@ export interface AggregateProject {
 export interface HeroAggregates {
   testsPassing: { total: number; byProject: Array<{ slug: string; value: number; asOf: string }> };
   demoVerified: number;
+  demoVerifiedByProject: Array<{ slug: string; asOf: string }>;
   oldestAsOf: string | null;
 }
 
@@ -26,6 +27,10 @@ export function aggregateHero(projects: AggregateProject[]): HeroAggregates {
   const verifiedProjects = measured.filter(({ project, metrics }) =>
     Boolean(project.links.live) && metrics.some((metric) => metric.id === 'demo_verified'),
   );
+  const demoVerifiedByProject = verifiedProjects.flatMap(({ project, metrics }) => {
+    const metric = metrics.find((item) => item.id === 'demo_verified' && item.as_of);
+    return metric?.as_of ? [{ slug: project.slug, asOf: metric.as_of }] : [];
+  });
   const usedDates = [
     ...testsByProject.map((item) => item.asOf),
     ...verifiedProjects.flatMap(({ metrics }) =>
@@ -39,6 +44,7 @@ export function aggregateHero(projects: AggregateProject[]): HeroAggregates {
       byProject: testsByProject,
     },
     demoVerified: verifiedProjects.length,
+    demoVerifiedByProject,
     oldestAsOf: usedDates[0] ?? null,
   };
 }
