@@ -51,9 +51,9 @@ export default async function LanguageLayout({
   const siteUrl = getSiteUrl().origin;
 
   return (
-    <html lang={lang as Locale}>
+    <html lang={lang as Locale} className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}>
       <head dangerouslySetInnerHTML={{ __html: `<link rel="alternate" hreflang="es" href="${siteUrl}/es"><link rel="alternate" hreflang="en" href="${siteUrl}/en"><link rel="alternate" hreflang="x-default" href="${siteUrl}/en">` }} />
-      <body className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}>
+      <body>
         {process.env.CONTENT_SOURCE === 'fixtures' ? <FixtureBanner dictionary={lang === 'es' ? es : en} /> : null}
         <MotionProvider>{children}</MotionProvider>
       </body>
