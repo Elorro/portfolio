@@ -4,6 +4,10 @@ import { notFound } from 'next/navigation';
 import { getSiteUrl } from '@/config/site';
 import { isLocale, locales, type Locale } from '@/i18n/config';
 import '@/styles/globals.css';
+import { MotionProvider } from '@/components/client/MotionProvider';
+import { FixtureBanner } from '@/components/FixtureBanner';
+import { es } from '@/i18n/dictionaries/es';
+import { en } from '@/i18n/dictionaries/en';
 
 const displayFont = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
 const bodyFont = IBM_Plex_Sans({ subsets: ['latin'], variable: '--font-ibm-plex-sans' });
@@ -29,7 +33,9 @@ export async function generateMetadata({
     title: 'Portfolio',
     alternates: {
       canonical: `/${lang}`,
+      languages: { es: '/es', en: '/en', 'x-default': '/en' },
     },
+    robots: process.env.CONTENT_SOURCE === 'fixtures' ? { index: false, follow: false } : undefined,
   };
 }
 
@@ -48,7 +54,8 @@ export default async function LanguageLayout({
     <html lang={lang as Locale}>
       <head dangerouslySetInnerHTML={{ __html: `<link rel="alternate" hreflang="es" href="${siteUrl}/es"><link rel="alternate" hreflang="en" href="${siteUrl}/en"><link rel="alternate" hreflang="x-default" href="${siteUrl}/en">` }} />
       <body className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}>
-        {children}
+        {process.env.CONTENT_SOURCE === 'fixtures' ? <FixtureBanner dictionary={lang === 'es' ? es : en} /> : null}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
