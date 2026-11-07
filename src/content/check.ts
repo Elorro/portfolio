@@ -1,8 +1,9 @@
-import { contentDirectory, loadContent } from './load';
+import { loadContent } from './load';
+import { loadContentFromDirectory } from './load-directory';
 import { formatContentReport } from './report';
 
 export async function checkContentDirectory(directory?: string, release = process.argv.includes('--release')) {
-  const result = await loadContent(directory ?? contentDirectory());
+  const result = directory === undefined ? await loadContent() : await loadContentFromDirectory(directory);
   const source = process.env.CONTENT_SOURCE ?? 'real';
   const releaseErrors: string[] = [];
   if (release) {
@@ -11,9 +12,12 @@ export async function checkContentDirectory(directory?: string, release = proces
     const { en } = await import('../i18n/dictionaries/en');
     const dictionaryText = [...Object.values(es), ...Object.values(en)].flatMap((value) => Array.isArray(value) ? value : [value]);
     if (dictionaryText.some((value) => typeof value === 'string' && value.includes('[FIXTURE]'))) releaseErrors.push('ERROR release: diccionarios contienen [FIXTURE]');
-    const { profile } = await import('../config/profile');
+    const { getProfile } = await import('../config/profile');
+    const profile = getProfile(source);
     if (JSON.stringify(profile).includes('[FIXTURE]')) releaseErrors.push('ERROR release: profile contiene [FIXTURE]');
-    for (const file of ['public/cv-es.pdf', 'public/cv-en.pdf']) {
+    for (const cvPath of Object.values(profile.cv)) {
+      if (!cvPath) continue;
+      const file = `public/${cvPath.replace(/^\/+/, '')}`;
       try { await (await import('node:fs/promises')).access(file); }
       catch { releaseErrors.push(`ERROR release: falta ${file}`); }
     }
