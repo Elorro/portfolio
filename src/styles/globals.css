@@ -42,8 +42,7 @@ body {
   outline: 3px solid var(--accent-2);
   outline-offset: 3px;
 }
-.skip-link { position: absolute; left: 1rem; top: 1rem; transform: translateY(-200%); z-index: 20; background: var(--surface-2); color: var(--text); padding: .75rem 1rem; }
-.skip-link:focus { transform: translateY(0); }
+.skip-link { display: inline-block; margin: .5rem 1rem; background: var(--surface-2); color: var(--text); padding: .75rem 1rem; }
 .fixture-banner { padding: .65rem 1rem; text-align: center; color: var(--text); background: var(--surface-2); border-bottom: 1px solid var(--border); font-weight: 700; }
 .site-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--border); }
 .site-header nav ul { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; list-style: none; margin: 0; padding: 0; }
