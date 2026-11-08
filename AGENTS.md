@@ -18,6 +18,7 @@ dependencia, DETENTE y pregunta; no lo resuelvas en silencio.
 
 ## Dependencias y stack
 - Solo las dependencias de la spec §1. Justifica por escrito cualquier otra.
+- `src/components/client/**` no importa `zod`, `gray-matter`, `node:*` ni `src/content/{validate,load,check}` (ESLint `no-restricted-imports`).
 - Prohibido output: 'export'. Sin MDX, CMS, base de datos ni API routes.
 
 ## Verificación
