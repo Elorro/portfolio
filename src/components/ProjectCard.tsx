@@ -14,6 +14,7 @@ export function ProjectCard({ item, dictionary, body = '', variant = 'small', la
       {secureLink(item.links.repo) ? <a href={secureLink(item.links.repo)} rel="noopener noreferrer">{dictionary.repository}</a> : null}
       {secureLink(item.links.live) ? <span><a href={secureLink(item.links.live)} rel="noopener noreferrer">{dictionary.liveDemo}</a>{item.live_caveat ? <span> — {item.live_caveat}</span> : null}</span> : null}
       {secureLink(item.links.api_docs) ? <a href={secureLink(item.links.api_docs)} rel="noopener noreferrer">{dictionary.apiDocumentation}</a> : null}
+      {secureLink(item.links.video) ? <a href={secureLink(item.links.video)} rel="noopener noreferrer">{dictionary.videoDemo}</a> : null}
     </div>
     <section className="honest-limit"><h4>{dictionary.honestLimit}</h4><p>{item.honest_limit}</p></section>
     {item.metrics.length ? <div className="metric-list">{item.metrics.map((metric) => <MetricItem key={metric.id} metric={metric} dictionary={dictionary} lang={lang} />)}</div> : null}

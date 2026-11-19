@@ -50,6 +50,7 @@ export const en = {
   repository: 'Repository',
   liveDemo: 'Live demo',
   apiDocumentation: 'API documentation',
+  videoDemo: 'Demo video',
   openProject: 'View project',
   openDetails: 'View details',
   closeDetails: 'Close details',

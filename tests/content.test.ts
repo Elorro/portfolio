@@ -7,6 +7,7 @@ import { aggregateHero } from '../src/content/aggregate';
 import { checkContentDirectory } from '../src/content/check';
 import { formatContentReport } from '../src/content/report';
 import { validateContentFiles, type ContentFileInput } from '../src/content/validate';
+import { contentSchema } from '../src/content/schema';
 
 const fixtureDirectory = path.join(process.cwd(), 'tests/fixtures/content');
 const fixedNow = new Date('2026-11-04T12:00:00.000Z');
@@ -87,6 +88,33 @@ describe('content validation', () => {
     document(files, 'sample.es.md').links = { repo: 'http://fixture.example/repo' };
     expect(validateContentFiles(files, fixedNow).errors).toContainEqual(
       expect.objectContaining({ file: 'sample.es.md', field: 'links.repo' }),
+    );
+  });
+
+  it('parses https video links and preserves the video key', async () => {
+    const files = await paired();
+    for (const input of files) (input.data as Record<string, unknown>).links = { video: 'https://video.example/demo' };
+    const result = validateContentFiles(files, fixedNow);
+    expect(result.errors).toEqual([]);
+    expect(result.documents[0]?.document.links.video).toBe('https://video.example/demo');
+  });
+
+  it('rejects http video links', () => {
+    const parsed = contentSchema.safeParse({
+      slug: 'video-fixture', tier: 'central', size: 'large', order: 1, lang: 'es',
+      title: 'Fixture', tagline: 'Fixture', status: 'prototype', stack: [],
+      links: { video: 'http://video.example/demo' }, metrics: [], honest_limit: 'Fixture',
+    });
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) expect(parsed.error.issues).toContainEqual(expect.objectContaining({ path: ['links', 'video'] }));
+  });
+
+  it('fails parity when links.video differs between languages', async () => {
+    const files = await paired();
+    document(files, 'sample.es.md').links = { video: 'https://video.example/es' };
+    document(files, 'sample.en.md').links = { video: 'https://video.example/en' };
+    expect(validateContentFiles(files, fixedNow).errors).toContainEqual(
+      expect.objectContaining({ file: 'sample.en.md', field: 'links' }),
     );
   });
 
@@ -226,6 +254,11 @@ describe('hero aggregates', () => {
     {
       slug: 'gamma', links: { live: 'https://gamma.example' }, metrics: [
         { id: 'tests_passing', label: 'Tests', value: 100, epistemic: 'declarado' as const, source: 'fixture', as_of: '2026-10-01' },
+      ],
+    },
+    {
+      slug: 'video-only', links: { video: 'https://video.example/demo' }, metrics: [
+        { id: 'demo_verified', label: 'Demo', value: 1, epistemic: 'medido' as const, source: 'fixture', as_of: '2026-11-03' },
       ],
     },
   ];
