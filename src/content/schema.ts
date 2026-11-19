@@ -25,7 +25,7 @@ export const contentSchema = z.object({
   tagline: z.string().trim().min(1),
   status: z.enum(['deployed', 'research', 'prototype', 'academic']),
   stack: z.array(z.string().trim().min(1)),
-  links: z.object({ repo: httpsLink.optional(), live: httpsLink.optional(), api_docs: httpsLink.optional() }),
+  links: z.object({ repo: httpsLink.optional(), live: httpsLink.optional(), api_docs: httpsLink.optional(), video: httpsLink.optional() }),
   metrics: z.array(metricSchema),
   honest_limit: z.string().trim().min(1),
   live_caveat: z.string().trim().min(1).optional(),

@@ -48,6 +48,7 @@ export const es = {
   repository: 'Repositorio',
   liveDemo: 'Demo en vivo',
   apiDocumentation: 'Documentación de API',
+  videoDemo: 'Vídeo de demostración',
   openProject: 'Ver proyecto',
   openDetails: 'Ver detalles',
   closeDetails: 'Cerrar detalles',

@@ -82,8 +82,9 @@ Frontmatter:
   slug (kebab) · tier central|soporte|mencion · size large|medium|small ·
   order (int) · lang es|en · title · tagline ·
   status deployed|research|prototype|academic · stack string[] ·
-  links { repo?, live?, api_docs? } (solo https) · metrics Metric[] ·
+  links { repo?, live?, api_docs?, video? } (solo https) · metrics Metric[] ·
   honest_limit (OBLIGATORIO, texto no vacío) · live_caveat? · assets? string[] ·
+  `video` es un enlace frágil (Drive); el repo es el enlace principal.
   case_study? boolean (el cuerpo markdown es el case study)
 
 Metric:

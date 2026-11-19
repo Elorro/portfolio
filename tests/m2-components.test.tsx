@@ -33,6 +33,8 @@ describe('M2 synchronous rendering', () => {
       expect(html).toContain('Synthetic limitation'); expect(html).toContain('Synthetic caveat');
       expect(html).toContain('https://example.invalid/live'); expect(html).toContain('https://example.invalid/repo'); expect(html).not.toContain('http://unsafe.invalid');
     }
+    const video = renderToString(<ProjectCard item={{ ...base, links: { repo: 'https://example.invalid/repo', video: 'https://example.invalid/video' } }} dictionary={es} />);
+    expect(video).toContain('Vídeo de demostración'); expect(video).toContain('https://example.invalid/video');
     const noLive = renderToString(<ProjectCard item={{ ...base, live_caveat: 'Orphan caveat', links: { repo: 'https://example.invalid/repo' } }} dictionary={es} />);
     expect(noLive).toContain('Synthetic limitation'); expect(noLive).not.toContain('Orphan caveat');
   });
