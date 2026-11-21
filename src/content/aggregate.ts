@@ -14,6 +14,13 @@ export interface HeroAggregates {
 }
 
 export function aggregateHero(projects: AggregateProject[]): HeroAggregates {
+  const slugs = new Set<string>();
+  for (const project of projects) {
+    if (slugs.has(project.slug)) {
+      throw new Error(`aggregateHero: slug duplicado "${project.slug}"; filtra por idioma antes de agregar`);
+    }
+    slugs.add(project.slug);
+  }
   const measured = projects.map((project) => ({
     project,
     metrics: project.metrics.filter((metric) => metric.epistemic === 'medido'),
