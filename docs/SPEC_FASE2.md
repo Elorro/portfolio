@@ -117,6 +117,8 @@ Solo cuentan métricas con epistemic = medido. No existe campo "featured".
   3. as_of más antiguo entre las métricas usadas en 1 y 2.
 Cada cifra muestra su fecha. El desglose es un <details>/<summary> (sin JS,
 accesible por teclado), no un tooltip. Funciones puras con tests.
+Los agregados y las secciones se calculan con las entradas del idioma de la
+ruta; las funciones fallan si reciben un slug duplicado.
 
 ## 6. Anti-obsolescencia
 
