@@ -3,6 +3,7 @@ import { en } from '@/i18n/dictionaries/en';
 import { es } from '@/i18n/dictionaries/es';
 import { isLocale } from '@/i18n/config';
 import { loadContent } from '@/content/load';
+import { documentsForLang } from '@/content/documents-for-lang';
 import { Hero } from '@/components/Hero';
 import { ProjectCard } from '@/components/ProjectCard';
 import { SupportCard } from '@/components/SupportCard';
@@ -24,7 +25,7 @@ export default async function HomePage({
   const result = await loadContent();
   if (result.errors.length) throw new Error(`Contenido inválido: ${result.errors.map((entry) => `${entry.file} [${entry.field}] ${entry.message}`).join('; ')}`);
   if ((process.env.CONTENT_SOURCE ?? 'real') === 'real' && !result.documents.length) throw new Error('CONTENT_SOURCE=real requiere contenido aprobado en content/projects; el directorio está vacío o no existe.');
-  const documents = result.documents.slice().sort((a, b) => a.document.order - b.document.order || a.document.slug.localeCompare(b.document.slug));
+  const documents = documentsForLang(result.documents, lang).sort((a, b) => a.document.order - b.document.order || a.document.slug.localeCompare(b.document.slug));
   const central = documents.filter(({ document }) => document.tier === 'central');
   const support = documents.filter(({ document }) => document.tier === 'soporte');
   const mentions = documents.filter(({ document }) => document.tier === 'mencion');
@@ -34,9 +35,9 @@ export default async function HomePage({
     <>
       <SiteHeader lang={lang} dictionary={dictionary} sections={sections} />
       <main id="main-content" className="site-main">
-        <Hero documents={result.documents} dictionary={dictionary} lang={lang} />
+        <Hero documents={documents} dictionary={dictionary} lang={lang} />
         {central.length ? <section id="projects"><h2>{dictionary.centralProjects}</h2><div className="central-grid">{central.map(({ document, body }) => <ProjectCard key={document.slug} item={document} body={body} dictionary={dictionary} lang={lang} variant={document.size === 'large' ? 'large' : document.size === 'medium' ? 'medium' : 'small'} />)}</div><div className="epistemic-legend"><details><summary>{dictionary.measured}</summary><p>{dictionary.measuredLegend}</p></details><details><summary>{dictionary.declared}</summary><p>{dictionary.declaredLegend}</p></details></div><div className="declared-metrics">{declarations.map((metric, index) => <p key={`${metric.id}-${index}`}>{metric.label}: {metric.value} <span className="epistemic epistemic-declarado">{dictionary.declared}</span></p>)}</div></section> : null}
-        <CaseStudy documents={result.documents} dictionary={dictionary} />
+        <CaseStudy documents={documents} dictionary={dictionary} />
         {support.length ? <section id="support"><h2>{dictionary.supportingProjects}</h2><div className="support-grid">{support.map(({ document, body }) => <SupportCard key={document.slug} item={document} body={body} dictionary={dictionary} lang={lang} />)}</div></section> : null}
         {mentions.length ? <section id="mentions"><h2>{dictionary.mentions}</h2><div className="mention-list">{mentions.map(({ document }) => <MentionRow key={document.slug} item={document} dictionary={dictionary} />)}</div></section> : null}
         <About dictionary={dictionary} />
